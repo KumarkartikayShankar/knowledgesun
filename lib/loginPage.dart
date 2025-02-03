@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'screens/homescreen.dart'; // Import HomePage
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -10,7 +11,7 @@ class LoginPage extends StatelessWidget {
   final String baseUrl = 'https://edu-auth.vercel.app/auth';
 
   // Login
-  Future<String?> _authUser(LoginData data) async {
+  Future<String?> _authUser(LoginData data, BuildContext context) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/login'),
@@ -22,6 +23,13 @@ class LoginPage extends StatelessWidget {
       );
 
       if (response.statusCode == 200) {
+        Future.delayed(Duration.zero, () {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const Homescreen()), // No data passed
+          );
+        });
+
         return null; // Success
       } else {
         return 'Invalid email or password';
@@ -32,7 +40,7 @@ class LoginPage extends StatelessWidget {
   }
 
   // Signup
-  Future<String?> _signup(SignupData data) async {
+  Future<String?> _signup(SignupData data, BuildContext context) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/signup'),
@@ -40,11 +48,18 @@ class LoginPage extends StatelessWidget {
         body: jsonEncode({
           'email': data.name,
           'password': data.password,
-          'additionalData': data.additionalSignupData, // Optional fields
+          'additionalData': data.additionalSignupData,
         }),
       );
 
       if (response.statusCode == 201) {
+        Future.delayed(Duration.zero, () {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const Homescreen()), // No data passed
+          );
+        });
+
         return null; // Success
       } else {
         return 'Signup failed. Try again.';
@@ -78,9 +93,9 @@ class LoginPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.orange,
       body: FlutterLogin(
-        onLogin: _authUser,
+        onLogin: (data) => _authUser(data, context), 
+        onSignup: (data) => _signup(data, context), 
         onRecoverPassword: _recoverPassword,
-        onSignup: _signup,
         theme: LoginTheme(
           primaryColor: Colors.orange.shade300,
           accentColor: Colors.white,
