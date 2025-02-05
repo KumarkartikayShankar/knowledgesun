@@ -1,19 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:knowledgesun/theme/theme_provider.dart';
+import 'package:provider/provider.dart'; // Import provider package
 import 'loginPage.dart';
-void main() {
+// Import your ThemeProvider
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner:  false,
-      home: LoginPage(),
+    return ChangeNotifierProvider(
+      create: (_) => ThemeProvider(),
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            theme: Provider.of<ThemeProvider>(context).themeData,
+            home: const LoginPage(),
+          );
+        },
+      ),
     );
   }
 }
-

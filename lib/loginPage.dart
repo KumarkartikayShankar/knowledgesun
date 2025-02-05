@@ -91,16 +91,20 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.orange,
       body: FlutterLogin(
         onLogin: (data) => _authUser(data, context), 
         onSignup: (data) => _signup(data, context), 
         onRecoverPassword: _recoverPassword,
         theme: LoginTheme(
-          primaryColor: Colors.orange.shade300,
+          
+          primaryColor: Colors.orange.shade500,
           accentColor: Colors.white,
+          
+          cardTheme: const CardTheme(color: Colors.white,
+          ),
           buttonTheme: const LoginButtonTheme(
-            backgroundColor: Colors.orange,
+            backgroundColor: Colors.amberAccent,
+            
           ),
         ),
       ),
