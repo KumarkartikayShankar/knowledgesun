@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:knowledgesun/components/drawer.dart';
-import 'package:provider/provider.dart'; // Import the provider package
 
 class Homescreen extends StatelessWidget {
   const Homescreen({super.key}); // Remove userEmail parameter
