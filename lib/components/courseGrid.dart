@@ -14,7 +14,7 @@ class CoursesGridScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return GridView.builder(
       shrinkWrap: true, // ✅ Fix for infinite height issue
-      physics: NeverScrollableScrollPhysics(), // ✅ Prevents scroll conflicts
+      physics:  NeverScrollableScrollPhysics(), // ✅ Prevents scroll conflicts
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: 10,

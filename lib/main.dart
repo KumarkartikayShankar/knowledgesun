@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:knowledgesun/loginPage.dart';
 import 'package:knowledgesun/theme/theme_provider.dart';
-import 'package:provider/provider.dart'; // Import provider package
-import 'loginPage.dart';
-// Import your ThemeProvider
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'components/bottomnavbar.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,16 +13,34 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  Future<bool> _checkLoginStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('isLoggedIn') ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => ThemeProvider(),
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
-          return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            theme: Provider.of<ThemeProvider>(context).themeData,
-            home: const LoginPage(),
+          return FutureBuilder<bool>(
+            future: _checkLoginStatus(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const MaterialApp(
+                  home: Scaffold(
+                    body: Center(child: CircularProgressIndicator()),
+                  ),
+                );
+              }
+
+              return MaterialApp(
+                debugShowCheckedModeBanner: false,
+                theme: themeProvider.themeData,
+                home: snapshot.data == true ? const Bottomnavbar() : const LoginPage(),
+              );
+            },
           );
         },
       ),
