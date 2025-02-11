@@ -30,7 +30,7 @@ class Homescreen extends StatelessWidget {
               padding: EdgeInsets.only(right: 16, top: 10),
               child: Align(
                 alignment: Alignment.centerRight,
-                child: StaticSearchTextField(),
+                child: AnimatedSearchTextFeild(),
               ),
             ),
             const SizedBox(height: 8), // Add a small gap if needed

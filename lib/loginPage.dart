@@ -91,7 +91,7 @@ class LoginPage extends StatelessWidget {
   Future<String?> _recoverPassword(String email) async {
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/recover-password'),
+        Uri.parse('$baseUrl/forgot-password'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'email': email}),
       );

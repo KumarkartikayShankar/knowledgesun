@@ -37,7 +37,7 @@ class CategoryButtons extends StatelessWidget {
                         print("${category['label']} clicked");
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black, // Button color
+                        backgroundColor: Colors.orange, // Button color
                         foregroundColor: Colors.white, // Text color
                         padding: const EdgeInsets.symmetric(
                             horizontal: 5, vertical: 5),

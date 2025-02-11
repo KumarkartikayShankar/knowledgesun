@@ -1,7 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:knowledgesun/loginPage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({super.key});
+
+  // Logout function
+  Future<void> _logout(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('isLoggedIn'); // Remove the login state
+
+    // Navigate to the login page after logout
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginPage()), // Redirect to LoginPage
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,27 +31,26 @@ class CustomDrawer extends StatelessWidget {
             ),
             accountName: Text(
               'Kumar Kartikay Shankar',
-              
-              style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
             ),
-            accountEmail: Text('kumar@gmail.com',style: TextStyle(color: Colors.white),),
+            accountEmail: Text(
+              'kumar@gmail.com',
+              style: TextStyle(color: Colors.white),
+            ),
             currentAccountPicture: CircleAvatar(
               backgroundImage: NetworkImage(
                   'https://media.licdn.com/dms/image/v2/D4D03AQEoL5KtR11I-g/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1722709693564?e=2147483647&v=beta&t=hUyOo4QyBQ3pCSJ6zharOLvGDWLYHJTeUUKwY9mI6C8'),
-              // Use local image as well
-              // backgroundImage: AssetImage('assets/profile_picture.jpg'),
             ),
           ),
 
           // Account Section
-           ListTile(
-              leading: const Icon(Icons.account_circle),
-              title: const Text('Account'),
-              onTap: () {
-                // Navigate to Account page
-              },
-            ),
-          
+          ListTile(
+            leading: const Icon(Icons.account_circle),
+            title: const Text('Account'),
+            onTap: () {
+              // Navigate to Account page
+            },
+          ),
 
           // My Courses Section
           ListTile(
@@ -62,6 +76,15 @@ class CustomDrawer extends StatelessWidget {
             title: const Text('About Us'),
             onTap: () {
               // Navigate to About Us page
+            },
+          ),
+          
+          // Logout Section
+          ListTile(
+            leading: const Icon(Icons.logout_outlined),
+            title: const Text('Logout'),
+            onTap: () {
+              _logout(context); // Call logout function
             },
           ),
         ],
