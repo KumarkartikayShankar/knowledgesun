@@ -21,7 +21,7 @@ class _AnimatedSearchTextFeildState extends State<AnimatedSearchTextFeild> {
         });
       },
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: const Duration(milliseconds: 400),
         width: opened ? MediaQuery.of(context).size.width * .9 : 200, // Increased width
         height: 56,
         decoration: BoxDecoration(

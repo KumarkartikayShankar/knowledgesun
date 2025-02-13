@@ -8,7 +8,7 @@ import '../components/bottomnavbar.dart';
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
-  final String baseUrl = 'https://edu-auth.vercel.app/auth';
+  final String _baseUrl = 'https://edu-auth.vercel.app/auth';
 
   Future<void> _saveLoginState() async {
     final prefs = await SharedPreferences.getInstance();
@@ -18,7 +18,7 @@ class LoginPage extends StatelessWidget {
   Future<String?> _authUser(LoginData data, BuildContext context) async {
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/login'),
+        Uri.parse('$_baseUrl/login'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'email': data.name,
@@ -30,7 +30,7 @@ class LoginPage extends StatelessWidget {
         await _saveLoginState();
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const Bottomnavbar()),
+          MaterialPageRoute(builder: (context) => const BottomNavbar()),
         );
         return null;
       } else {
@@ -44,7 +44,7 @@ class LoginPage extends StatelessWidget {
   Future<String?> _signup(SignupData data, BuildContext context) async {
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/signup'),
+        Uri.parse('$_baseUrl/signup'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'email': data.name,
@@ -57,7 +57,7 @@ class LoginPage extends StatelessWidget {
         await _saveLoginState();
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const Bottomnavbar()),
+          MaterialPageRoute(builder: (context) => const BottomNavbar()),
         );
         return null;
       } else {
@@ -71,7 +71,7 @@ class LoginPage extends StatelessWidget {
   Future<String?> _recoverPassword(String email) async {
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/forgot-password'),
+        Uri.parse('$_baseUrl/forgot-password'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'email': email}),
       );

@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
               return MaterialApp(
                 debugShowCheckedModeBanner: false,
                 theme: themeProvider.themeData,
-                home: snapshot.data == true ? const Bottomnavbar() : const LoginPage(),
+                home: snapshot.data == true ? const BottomNavbar() : const LoginPage(),
               );
             },
           );

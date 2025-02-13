@@ -8,12 +8,9 @@ class CartPages extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar:  AppBar(
-        iconTheme: const IconThemeData(color: Colors.white),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
+     
       drawer: const CustomDrawer(),
-      body: Text("cart"),
+      body: Center(child: Text("cart")),
     );
   }
 }

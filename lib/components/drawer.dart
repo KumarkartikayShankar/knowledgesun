@@ -42,16 +42,7 @@ class CustomDrawer extends StatelessWidget {
                   'https://media.licdn.com/dms/image/v2/D4D03AQEoL5KtR11I-g/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1722709693564?e=2147483647&v=beta&t=hUyOo4QyBQ3pCSJ6zharOLvGDWLYHJTeUUKwY9mI6C8'),
             ),
           ),
-
-          // Account Section
-          ListTile(
-            leading: const Icon(Icons.account_circle),
-            title: const Text('Account'),
-            onTap: () {
-              // Navigate to Account page
-            },
-          ),
-
+          
           // My Courses Section
           ListTile(
             leading: const Icon(Icons.book),

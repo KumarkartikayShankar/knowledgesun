@@ -4,14 +4,14 @@ import 'package:knowledgesun/screens/cart.dart';
 import 'package:knowledgesun/screens/homescreen.dart';
 import 'package:knowledgesun/screens/profile_screen.dart';
 
-class Bottomnavbar extends StatefulWidget {
-  const Bottomnavbar({super.key});
+class BottomNavbar extends StatefulWidget {
+  const BottomNavbar({super.key});
 
   @override
-  State<Bottomnavbar> createState() => _BottomnavbarState();
+  State<BottomNavbar> createState() => _BottomNavbarState();
 }
 
-class _BottomnavbarState extends State<Bottomnavbar> {
+class _BottomNavbarState extends State<BottomNavbar> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
@@ -23,41 +23,50 @@ class _BottomnavbarState extends State<Bottomnavbar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_selectedIndex], // Display selected page here
+
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _pages,
+      ), // Retains the state of the pages
       bottomNavigationBar: Container(
-        margin: const EdgeInsets.all(0.1), // Margin around the bottom navbar
+        margin: const EdgeInsets.only(bottom: 5,left: 9,right: 9), // Adds space from the bottom
+        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(0), // Curved borders
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+            bottomLeft: Radius.circular(50),
+            bottomRight: Radius.circular(50)
+          ), // Curved top corners
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
+              blurRadius: 20,
               spreadRadius: 2,
             ),
           ],
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(1.0),
-          child: GNav(
-            gap: 8, // Space between icons and text
-            backgroundColor: Colors.transparent, // Transparent background
-            color: Colors.black,
-            activeColor: Colors.white,
-            tabBackgroundColor: Colors.orange,
-            padding: const EdgeInsets.all(16),
-            tabs: const [
-              GButton(icon: Icons.home, text: 'Home'),
-              GButton(icon: Icons.shopping_cart_outlined, text: 'My Cart'),
-              GButton(icon: Icons.person, text: 'Account'),
-            ],
-            selectedIndex: _selectedIndex,
-            onTabChange: (index) {
-              setState(() {
-                _selectedIndex = index;
-              });
-            },
-          ),
+        child: GNav(
+          gap: 8, // Space between icons and text
+          backgroundColor: Colors.transparent, // Transparent to match container
+          color: Colors.black,
+          activeColor: Colors.white,
+          tabBackgroundColor: Colors.orange.shade500,
+          tabBorderRadius: 50,
+          tabMargin: const EdgeInsets.symmetric(vertical: 5, horizontal: 4), // Spacing
+          padding: const EdgeInsets.all(12),
+          tabs: const [
+            GButton(icon: Icons.home, text: 'Home'),
+            GButton(icon: Icons.shopping_cart_outlined, text: 'My Cart'),
+            GButton(icon: Icons.person, text: 'Account'),
+          ],
+          selectedIndex: _selectedIndex,
+          onTabChange: (index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
         ),
       ),
     );

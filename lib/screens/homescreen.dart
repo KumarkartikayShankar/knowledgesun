@@ -5,9 +5,15 @@ import 'package:knowledgesun/components/drawer.dart';
 import 'package:knowledgesun/components/searchbar.dart';
 import 'package:knowledgesun/components/sliderbutton_horizontal.dart';
 
-
-class Homescreen extends StatelessWidget {
+class Homescreen extends StatefulWidget {
   const Homescreen({super.key});
+
+  @override
+  State<Homescreen> createState() => _HomescreenState();
+}
+
+class _HomescreenState extends State<Homescreen> {
+  final ScrollController _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -20,28 +26,29 @@ class Homescreen extends StatelessWidget {
         backgroundColor: currentTheme.colorScheme.inversePrimary,
       ),
       drawer: const CustomDrawer(),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min, // Ensure the column takes minimum height
-          children: [
-            const Carousel(),
-            const Padding(
-              padding: EdgeInsets.only(right: 16, top: 10),
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: AnimatedSearchTextFeild(),
-              ),
+      body: CustomScrollView(
+        controller: _scrollController, // Now connected properly
+        slivers: [
+          SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Carousel(),
+                const Padding(
+                  padding: EdgeInsets.only(right: 16, top: 10),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: AnimatedSearchTextFeild(),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                CategoryButtons(),
+              ],
             ),
-            const SizedBox(height: 8), // Add a small gap if needed
-            CategoryButtons(), // Ensure this widget doesn't have extra padding/margin
-            // Set a fixed height for the grid
-           CoursesGridScreen(),
-            
-          ],
-        ),
+          ),
+          CoursesList(scrollController: _scrollController), // Pass scroll controller
+        ],
       ),
-      
     );
   }
 }
