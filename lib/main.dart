@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knowledgesun/components/cart_provider.dart';
 import 'package:knowledgesun/loginPage.dart';
 import 'package:knowledgesun/theme/theme_provider.dart';
 import 'package:provider/provider.dart';
@@ -20,8 +21,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => ThemeProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()), // Theme management
+        ChangeNotifierProvider(create: (_) => CartProvider()),  // Cart management
+      ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
           return FutureBuilder<bool>(

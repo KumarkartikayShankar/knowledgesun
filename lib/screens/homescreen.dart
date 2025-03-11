@@ -4,6 +4,8 @@ import 'package:knowledgesun/components/courseGrid.dart';
 import 'package:knowledgesun/components/drawer.dart';
 import 'package:knowledgesun/components/searchbar.dart';
 import 'package:knowledgesun/components/sliderbutton_horizontal.dart';
+import 'package:knowledgesun/screens/course_info_screen.dart';
+
 
 class Homescreen extends StatefulWidget {
   const Homescreen({super.key});
@@ -27,7 +29,7 @@ class _HomescreenState extends State<Homescreen> {
       ),
       drawer: const CustomDrawer(),
       body: CustomScrollView(
-        controller: _scrollController, // Now connected properly
+        controller: _scrollController,
         slivers: [
           SliverToBoxAdapter(
             child: Column(
@@ -46,7 +48,21 @@ class _HomescreenState extends State<Homescreen> {
               ],
             ),
           ),
-          CoursesList(scrollController: _scrollController), // Pass scroll controller
+          CoursesList(
+            scrollController: _scrollController,
+            onCourseTap: (courseTitle, courseImage, coursePrice) { // ✅ Updated to pass price
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CourseInfoScreen(
+                    courseTitle: courseTitle,
+                    courseImage: courseImage,
+                    coursePrice: coursePrice, // ✅ Pass correct price
+                  ),
+                ),
+              );
+            },
+          ),
         ],
       ),
     );

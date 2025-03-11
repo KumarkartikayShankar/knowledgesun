@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import 'package:lottie/lottie.dart';
 
 class CoursesList extends StatefulWidget {
   final ScrollController scrollController;
+  final Function(String, String, String) onCourseTap; // ✅ Updated to include price
 
-  const CoursesList({super.key, required this.scrollController});
+  const CoursesList({
+    super.key,
+    required this.scrollController,
+    required this.onCourseTap,
+  });
 
   @override
   State<CoursesList> createState() => _CoursesListState();
@@ -37,6 +41,7 @@ class _CoursesListState extends State<CoursesList> {
               .map<Map<String, String>>((course) => {
                     "title": course["title"] ?? "No Title",
                     "image": course["image"] ?? "",
+                    "price": course["price"] ?? "N/A", // ✅ Fetch price from API
                   })
               .toList();
           _isLoading = false;
@@ -54,15 +59,15 @@ class _CoursesListState extends State<CoursesList> {
 
   @override
   Widget build(BuildContext context) {
-     if (_isLoading) {
+    if (_isLoading) {
       return SliverToBoxAdapter(
         child: Center(
-          child: Lottie.network(
-            'https://assets2.lottiefiles.com/packages/lf20_h9kds1my.json',
-            width: 150,
-            height: 150,
-            repeat: true,
-          ),
+          child:  Lottie.asset(
+              'lib/assets/loading.json', // Ensure this file is in the assets folder
+              width: 200,
+              height: 200,
+              repeat: false, // Play animation only once
+            ),
         ),
       );
     }
@@ -86,50 +91,61 @@ class _CoursesListState extends State<CoursesList> {
   }
 
   Widget _buildItem(Map<String, String> course) {
-    return Container(
-      width: 400,
-      height: 200,
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
-        child: Column(
-          children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
-              child: course["image"]!.isNotEmpty
-                  ? Image.network(
-                      course["image"]!,
-                      width: 400,
-                      height: 135,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => 
-                          const Icon(Icons.broken_image, size: 100, color: Colors.grey),
-                    )
-                  : const Icon(Icons.image_not_supported, size: 100, color: Colors.grey),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      course["title"]!,
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.favorite_border, color: Colors.black),
-                    onPressed: () {},
-                  ),
-                ],
+    return GestureDetector(
+      onTap: () {
+        widget.onCourseTap(course["title"]!, course["image"]!, course["price"]!); // ✅ Pass price
+      },
+      child: Container(
+        width: 400,
+        height: 200,
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Card(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+          child: Column(
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
+                child: course["image"]!.isNotEmpty
+                    ? Image.network(
+                        course["image"]!,
+                        width: 400,
+                        height: 135,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(Icons.broken_image, size: 100, color: Colors.grey),
+                      )
+                    : const Icon(Icons.image_not_supported, size: 100, color: Colors.grey),
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            course["title"]!,
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                         
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.favorite_border, color: Colors.black),
+                      onPressed: () {},
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
