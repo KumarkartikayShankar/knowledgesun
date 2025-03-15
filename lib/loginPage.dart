@@ -10,11 +10,15 @@ class LoginPage extends StatelessWidget {
 
   final String _baseUrl = 'https://edu-auth.vercel.app/auth';
 
-  Future<void> _saveLoginState() async {
+  // ✅ Save JWT token & email to SharedPreferences
+  Future<void> _saveLoginState(String token, String email) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isLoggedIn', true);
+    await prefs.setString('jwt_token', token);
+    await prefs.setString('user_email', email); // ✅ Store email
   }
 
+  // ✅ Login API Call
   Future<String?> _authUser(LoginData data, BuildContext context) async {
     try {
       final response = await http.post(
@@ -27,12 +31,19 @@ class LoginPage extends StatelessWidget {
       );
 
       if (response.statusCode == 200) {
-        await _saveLoginState();
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const BottomNavbar()),
-        );
-        return null;
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String? token = responseData['token'];
+
+        if (token != null) {
+          await _saveLoginState(token, data.name); // ✅ Store email
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const BottomNavbar()),
+          );
+          return null;
+        } else {
+          return 'Error: No token received';
+        }
       } else {
         return 'Invalid email or password';
       }
@@ -41,6 +52,7 @@ class LoginPage extends StatelessWidget {
     }
   }
 
+  // ✅ Signup API Call
   Future<String?> _signup(SignupData data, BuildContext context) async {
     try {
       final response = await http.post(
@@ -54,12 +66,19 @@ class LoginPage extends StatelessWidget {
       );
 
       if (response.statusCode == 201) {
-        await _saveLoginState();
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const BottomNavbar()),
-        );
-        return null;
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String? token = responseData['token'];
+
+        if (token != null) {
+          await _saveLoginState(token, data.name ?? ''); // ✅ Store email
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const BottomNavbar()),
+          );
+          return null;
+        } else {
+          return 'Error: No token received';
+        }
       } else {
         return 'Signup failed. Try again.';
       }
@@ -68,6 +87,7 @@ class LoginPage extends StatelessWidget {
     }
   }
 
+  // ✅ Recover Password API Call
   Future<String?> _recoverPassword(String email) async {
     try {
       final response = await http.post(
@@ -77,7 +97,7 @@ class LoginPage extends StatelessWidget {
       );
 
       if (response.statusCode == 200) {
-        return null;
+        return null; // ✅ Success, email sent
       } else {
         return 'Email not found';
       }
@@ -92,7 +112,7 @@ class LoginPage extends StatelessWidget {
       body: FlutterLogin(
         onLogin: (data) => _authUser(data, context),
         onSignup: (data) => _signup(data, context),
-        onRecoverPassword: _recoverPassword,
+        onRecoverPassword: _recoverPassword, // ✅ Required Parameter Added
         theme: LoginTheme(
           primaryColor: Colors.orange.shade500,
           accentColor: Colors.white,
