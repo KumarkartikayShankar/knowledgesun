@@ -13,18 +13,31 @@ class AccountPage extends StatefulWidget {
 
 class _AccountPageState extends State<AccountPage> {
   String? userEmail;
+  String? profileUrl; // ✅ Store Profile URL
 
   @override
   void initState() {
     super.initState();
-    _loadUserEmail();
+    _loadUserData();
   }
 
-  // ✅ Load user email from SharedPreferences
-  Future<void> _loadUserEmail() async {
+  // ✅ Load user data from SharedPreferences
+  Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       userEmail = prefs.getString('user_email') ?? 'No email found';
+
+      // Fetch and correct profile image URL
+      String? storedProfileUrl = prefs.getString('user_profile');
+      if (storedProfileUrl != null && storedProfileUrl.isNotEmpty) {
+        if (!storedProfileUrl.endsWith('.jpg') && !storedProfileUrl.endsWith('.png')) {
+          profileUrl = "$storedProfileUrl.jpg"; // Append .jpg if missing
+        } else {
+          profileUrl = storedProfileUrl;
+        }
+      } else {
+        profileUrl = "https://i.imgur.com/6oTdEsH.jpg"; // Default Image
+      }
     });
   }
 
@@ -33,6 +46,7 @@ class _AccountPageState extends State<AccountPage> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('isLoggedIn');
     await prefs.remove('user_email');
+    await prefs.remove('user_profile');
 
     Navigator.pushReplacement(
       context,
@@ -62,10 +76,9 @@ class _AccountPageState extends State<AccountPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            const CircleAvatar(
+            CircleAvatar(
               radius: 50,
-              backgroundImage: NetworkImage(
-                  'https://media.licdn.com/dms/image/v2/D4D03AQEoL5KtR11I-g/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1722709693564?e=2147483647&v=beta&t=hUyOo4QyBQ3pCSJ6zharOLvGDWLYHJTeUUKwY9mI6C8'),
+              backgroundImage: NetworkImage(profileUrl ?? "https://i.imgur.com/6oTdEsH.jpg"), // ✅ Load Dynamic Image
             ),
             const SizedBox(height: 10),
 

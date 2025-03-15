@@ -16,19 +16,21 @@ class CustomDrawer extends StatefulWidget {
 class _CustomDrawerState extends State<CustomDrawer> {
   bool isSwitchOn = false;
   String? userEmail = "Loading..."; // Default email placeholder
+  String? profileUrl; // ✅ Profile image URL
 
   @override
   void initState() {
     super.initState();
     _loadSwitchState();
-    _loadUserEmail(); // ✅ Load saved email
+    _loadUserData(); // ✅ Load email & profile image
   }
 
-  // ✅ Load email from SharedPreferences
-  Future<void> _loadUserEmail() async {
+  // ✅ Load user email & profile image from SharedPreferences
+  Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      userEmail = prefs.getString('user_email') ?? 'No email found'; // Default if not found
+      userEmail = prefs.getString('user_email') ?? 'No email found';
+      profileUrl = prefs.getString('user_profile'); // Load profile image URL
     });
   }
 
@@ -45,7 +47,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isSwitchOn', value);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -64,9 +65,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
               userEmail ?? 'No email found', // ✅ Display dynamic email
               style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
-            currentAccountPicture: const CircleAvatar(
-              backgroundImage: NetworkImage(
-                  'https://media.licdn.com/dms/image/v2/D4D03AQEoL5KtR11I-g/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1722709693564?e=2147483647&v=beta&t=hUyOo4QyBQ3pCSJ6zharOLvGDWLYHJTeUUKwY9mI6C8'),
+            currentAccountPicture: CircleAvatar(
+              backgroundImage: profileUrl != null && profileUrl!.isNotEmpty
+                  ? NetworkImage(profileUrl!) // ✅ Use dynamic profile image
+                  : const AssetImage('lib/assets/Ram.png') as ImageProvider, // ✅ Fallback image
             ),
           ),
 
@@ -124,8 +126,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ),
             onTap: () {},
           ),
-
-          
         ],
       ),
     );

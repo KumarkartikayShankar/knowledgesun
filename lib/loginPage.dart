@@ -10,12 +10,13 @@ class LoginPage extends StatelessWidget {
 
   final String _baseUrl = 'https://edu-auth.vercel.app/auth';
 
-  // ✅ Save JWT token & email to SharedPreferences
-  Future<void> _saveLoginState(String token, String email) async {
+  // ✅ Save JWT token, email, and profile image to SharedPreferences
+  Future<void> _saveLoginState(String token, String email, String profile) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isLoggedIn', true);
     await prefs.setString('jwt_token', token);
-    await prefs.setString('user_email', email); // ✅ Store email
+    await prefs.setString('user_email', email);
+    await prefs.setString('user_profile', profile); // ✅ Store profile image
   }
 
   // ✅ Login API Call
@@ -33,16 +34,17 @@ class LoginPage extends StatelessWidget {
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
         final String? token = responseData['token'];
+        final String? profile = responseData['user']['profile']; // ✅ Extract profile image URL
 
-        if (token != null) {
-          await _saveLoginState(token, data.name); // ✅ Store email
+        if (token != null && profile != null) {
+          await _saveLoginState(token, data.name, profile); // ✅ Save all user data
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const BottomNavbar()),
           );
           return null;
         } else {
-          return 'Error: No token received';
+          return 'Error: No token or profile received';
         }
       } else {
         return 'Invalid email or password';
@@ -68,16 +70,17 @@ class LoginPage extends StatelessWidget {
       if (response.statusCode == 201) {
         final Map<String, dynamic> responseData = json.decode(response.body);
         final String? token = responseData['token'];
+        final String? profile = responseData['user']['profile']; // ✅ Extract profile image URL
 
-        if (token != null) {
-          await _saveLoginState(token, data.name ?? ''); // ✅ Store email
+        if (token != null && profile != null) {
+          await _saveLoginState(token, data.name ?? '', profile); // ✅ Save all user data
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const BottomNavbar()),
           );
           return null;
         } else {
-          return 'Error: No token received';
+          return 'Error: No token or profile received';
         }
       } else {
         return 'Signup failed. Try again.';
@@ -112,7 +115,7 @@ class LoginPage extends StatelessWidget {
       body: FlutterLogin(
         onLogin: (data) => _authUser(data, context),
         onSignup: (data) => _signup(data, context),
-        onRecoverPassword: _recoverPassword, // ✅ Required Parameter Added
+        onRecoverPassword: _recoverPassword,
         theme: LoginTheme(
           primaryColor: Colors.orange.shade500,
           accentColor: Colors.white,
