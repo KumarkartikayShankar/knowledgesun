@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:knowledgesun/loginPage.dart';
 import 'package:knowledgesun/screens/my_course_screen.dart';
+import 'package:knowledgesun/screens/wishlistscreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lottie/lottie.dart';
 
@@ -87,6 +88,16 @@ class _CustomDrawerState extends State<CustomDrawer> {
             title: const Text('Help'),
             onTap: () {
               // Navigate to Help page
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.favorite),
+            title: const Text('Wishlist'),
+            onTap: () {
+               Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) =>  WishlistPage()),
+              );
             },
           ),
 

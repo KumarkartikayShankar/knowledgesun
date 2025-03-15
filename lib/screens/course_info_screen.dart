@@ -258,7 +258,7 @@ class _CourseInfoScreenState extends State<CourseInfoScreen> {
                       backgroundColor: Colors.green,
                       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
                     ),
-                    child: const Text("Buy Now", style: TextStyle(fontSize: 18, color: Colors.white)),
+                    child: const Text("Enroll Now", style: TextStyle(fontSize: 18, color: Colors.white)),
                   ),
                 ),
               ),

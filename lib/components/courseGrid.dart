@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:lottie/lottie.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CoursesList extends StatefulWidget {
   final ScrollController scrollController;
-  final Function(String, String, String) onCourseTap; // ✅ Updated to include price
+  final Function(String, String, String) onCourseTap;
 
   const CoursesList({
     super.key,
@@ -19,9 +20,13 @@ class CoursesList extends StatefulWidget {
 
 class _CoursesListState extends State<CoursesList> {
   final String _apiUrl = 'https://edtechdata.shivamrajdubey.tech/data/courses/latest';
+  final String _wishlistAddApiUrl = 'https://edtechdata.shivamrajdubey.tech/data/wishlist/add';
+  final String _wishlistRemoveApiUrl = 'https://edtechdata.shivamrajdubey.tech/data/wishlist/remove';
+
   List<Map<String, String>> _courses = [];
   bool _isLoading = true;
   String _errorMessage = '';
+  Set<String> _wishlist = {}; // Stores favorite courses
 
   @override
   void initState() {
@@ -29,6 +34,7 @@ class _CoursesListState extends State<CoursesList> {
     _fetchCourses();
   }
 
+  // ✅ Fetch courses
   Future<void> _fetchCourses() async {
     try {
       final response = await http.get(Uri.parse(_apiUrl));
@@ -41,7 +47,7 @@ class _CoursesListState extends State<CoursesList> {
               .map<Map<String, String>>((course) => {
                     "title": course["title"] ?? "No Title",
                     "image": course["image"] ?? "",
-                    "price": course["price"] ?? "N/A", // ✅ Fetch price from API
+                    "price": course["price"] ?? "N/A",
                   })
               .toList();
           _isLoading = false;
@@ -57,17 +63,93 @@ class _CoursesListState extends State<CoursesList> {
     }
   }
 
+  // ✅ Fetch JWT token from SharedPreferences
+  Future<String?> _getAuthToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('jwt_token'); // Fetch token
+  }
+
+  // ✅ Add course to wishlist
+  Future<void> _addToWishlist(Map<String, String> course) async {
+    final token = await _getAuthToken();
+    if (token == null) {
+      print("Error: No token found. Please log in.");
+      return;
+    }
+
+    try {
+      final response = await http.post(
+        Uri.parse(_wishlistAddApiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'title': course["title"],
+          'image': course["image"],
+          'price': course["price"],
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _wishlist.add(course["title"]!);
+        });
+        print("Course added to wishlist");
+      } else {
+        print("Failed to add course to wishlist: ${response.body}");
+      }
+    } catch (e) {
+      print("Error adding to wishlist: $e");
+    }
+  }
+
+  // ✅ Remove course from wishlist
+  Future<void> _removeFromWishlist(Map<String, String> course) async {
+    final token = await _getAuthToken();
+    if (token == null) {
+      print("Error: No token found. Please log in.");
+      return;
+    }
+
+    try {
+      final response = await http.post(
+        Uri.parse(_wishlistRemoveApiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'title': course["title"],
+          'image': course["image"],
+          'price': course["price"],
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _wishlist.remove(course["title"]!);
+        });
+        print("Course removed from wishlist");
+      } else {
+        print("Failed to remove course from wishlist: ${response.body}");
+      }
+    } catch (e) {
+      print("Error removing from wishlist: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
       return SliverToBoxAdapter(
         child: Center(
-          child:  Lottie.asset(
-              'lib/assets/loading.json', // Ensure this file is in the assets folder
-              width: 200,
-              height: 200,
-              repeat: false, // Play animation only once
-            ),
+          child: Lottie.asset(
+            'lib/assets/loading.json',
+            width: 200,
+            height: 200,
+            repeat: false,
+          ),
         ),
       );
     }
@@ -93,7 +175,7 @@ class _CoursesListState extends State<CoursesList> {
   Widget _buildItem(Map<String, String> course) {
     return GestureDetector(
       onTap: () {
-        widget.onCourseTap(course["title"]!, course["image"]!, course["price"]!); // ✅ Pass price
+        widget.onCourseTap(course["title"]!, course["image"]!, course["price"]!);
       },
       child: Container(
         width: 400,
@@ -133,13 +215,21 @@ class _CoursesListState extends State<CoursesList> {
                             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                             overflow: TextOverflow.ellipsis,
                           ),
-                         
                         ],
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.favorite_border, color: Colors.black),
-                      onPressed: () {},
+                      icon: Icon(
+                        _wishlist.contains(course["title"]) ? Icons.favorite : Icons.favorite_border,
+                        color: _wishlist.contains(course["title"]) ? Colors.red : Colors.black,
+                      ),
+                      onPressed: () {
+                        if (_wishlist.contains(course["title"])) {
+                          _removeFromWishlist(course);
+                        } else {
+                          _addToWishlist(course);
+                        }
+                      },
                     ),
                   ],
                 ),

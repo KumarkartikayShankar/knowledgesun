@@ -64,7 +64,8 @@ class _AccountPageState extends State<AccountPage> {
           children: [
             const CircleAvatar(
               radius: 50,
-              backgroundImage: AssetImage('assets/profile.png'), // ✅ Replace with actual image
+              backgroundImage: NetworkImage(
+                  'https://media.licdn.com/dms/image/v2/D4D03AQEoL5KtR11I-g/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1722709693564?e=2147483647&v=beta&t=hUyOo4QyBQ3pCSJ6zharOLvGDWLYHJTeUUKwY9mI6C8'),
             ),
             const SizedBox(height: 10),
 

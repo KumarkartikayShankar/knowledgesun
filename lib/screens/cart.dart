@@ -166,16 +166,20 @@ class _CartPagesState extends State<CartPages> {
       appBar: AppBar(title: const Text("Cart")),
       body: isLoading
           ? Center(
-              child: SizedBox(
-                width: double.infinity,
-                child: Lottie.asset(
-                  'lib/assets/loading.json',
-                  width: 200,
-                  height: 200,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            )
+  child: Column(
+    mainAxisAlignment: MainAxisAlignment.center, // Centers vertically
+    children: [
+      SizedBox(
+        width: 250,  // Adjust size as needed
+        height: 250, // Adjust size as needed
+        child: Lottie.asset(
+          'lib/assets/cartpageloading.json',
+          fit: BoxFit.contain, // Ensures it stays within bounds
+        ),
+      ),
+    ],
+  ),
+)
           : hasError
               ? const Center(child: Text("Failed to load cart data"))
               : Column(
